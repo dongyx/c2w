@@ -50,7 +50,7 @@ Create a simple Shell script named `netmark`.
 c2w --cgi --mime text/html kramdown
 ```
 
-Give it the execution permission and put it in the `cgi-bin` directory of your HTTP serve.
+Give it the execution permission and put it in the `cgi-bin` directory of your HTTP server.
 Now you get an online Markdown renderer at `..../cgi-bin/netmark`.
 
 ## Detailed Usage
