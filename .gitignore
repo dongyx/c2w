@@ -1,0 +1,9 @@
+/dist
+/build
+/.python-version
+/venv
+*.egg-info
+__pycache__
+
+*.swp
+.DS_Store
