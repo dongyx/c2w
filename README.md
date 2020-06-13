@@ -17,15 +17,13 @@ We convert [kramdown](https://kramdown.gettalong.org) to a web service to get an
 ```
 
 `c2w` is serving on `127.0.0.1:8000` now.
-The query string will be split by `&` and sent to `kramdown` as arguments.
-The request body will be sent to the `stdin` of `kramdown` and the `stdout` of `kramdown` will be sent to the browser.
 
 ```
 % curl http://localhost:8000 -X POST --data-binary @- << __EOF__
-# TITLE
-
-This is **strong**.
-__EOF__
+heredoc> # TITLE
+heredoc>
+heredoc> This is **strong**.
+heredoc> __EOF__
 ```
 
 We could get the following.
@@ -34,6 +32,28 @@ We could get the following.
 <h1 id="title">TITLE</h1>
 
 <p>This is <strong>strong</strong>.</p>
+```
+
+The query string will be split by `&`, decoded and sent to `kramdown` as arguments.
+The request body will be sent to the `stdin` of `kramdown` and the `stdout` of `kramdown` will be sent to the browser.
+
+`kramdown` can translate Mardown to LaTex with the option `-o latex`.
+If we want to get the LaTex output, we could put `-o&latex` in the query string.
+
+```
+% curl 'http://localhost:8000?-o&latex' --data-binary @- << __EOF__
+heredoc> # TITLE
+heredoc>
+heredoc> This is **strong**.
+heredoc> __EOF__
+```
+
+We got the following.
+
+```
+\section{TITLE}\hypertarget{title}{}\label{title}
+
+This is \textbf{strong}.
 ```
 
 ## Serving as a CGI program with an HTTP Server
