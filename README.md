@@ -76,3 +76,7 @@ Now you get an online Markdown renderer at `..../cgi-bin/netmark`.
 ## Detailed Usage
 
 Run `c2w --help`.
+
+## Why I Wrote It
+
+[c2w: Convert Any CLI Program to a Web Service](http://dongyuxuan.me/posts/c2w.html)
