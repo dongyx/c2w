@@ -8,7 +8,7 @@ The c2w utility converts a CLI program to a Web service.
 % pip install c2w
 ```
 
-## Getting Startted
+## Getting Started
 
 We convert [kramdown](https://kramdown.gettalong.org) to a web service to get an online Markdown renderer.
 
@@ -34,8 +34,11 @@ We could get the following.
 <p>This is <strong>strong</strong>.</p>
 ```
 
-The query string will be split by `&`, decoded and sent to `kramdown` as arguments.
-The request body will be sent to the `stdin` of `kramdown` and the `stdout` of `kramdown` will be sent to the browser.
+`c2w` handles both `GET` and `POST` requests and treats them as the same with the following rules.
+
++ The query string will be split by `&`, decoded and sent to `kramdown` as arguments.
+
++ The request body will be sent to the `stdin` of `kramdown` and the `stdout` of `kramdown` will be sent to the browser.
 
 `kramdown` can translate Mardown to LaTex with the option `-o latex`.
 If we want to get the LaTex output, we could put `-o&latex` in the query string.
@@ -58,7 +61,7 @@ This is \textbf{strong}.
 
 ## Serving as a CGI program with an HTTP Server
 
-The HTTP server provided by `c2w` is not mature enough.
+The HTTP server provided by `c2w` is not mature enough and not recommended to use in a production environment.
 You may want to use Apache HTTPd or Nginx.
 To achieve this you can run `c2w` in CGI mode.
 
@@ -71,7 +74,6 @@ c2w --cgi --mime text/html kramdown
 ```
 
 Give it the execution permission and put it in the `cgi-bin` directory of your HTTP server.
-Now you get an online Markdown renderer at `..../cgi-bin/netmark`.
 
 ## Detailed Usage
 

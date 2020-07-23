@@ -6,7 +6,7 @@ convert a CLI programs to a web service
 
 """
 
-__version__ = '0.0.0'
+__version__ = '0.0.1'
 
 from http.server import HTTPServer
 from http.server import BaseHTTPRequestHandler
@@ -19,13 +19,6 @@ import sys
 import os
 
 class WebifyHandler(BaseHTTPRequestHandler):
-	def setup(self):
-		global args
-
-		ret = BaseHTTPRequestHandler.setup(self)
-		self.request.settimeout(args.timeout)
-		return ret
-
 	def do_GET(self):
 		global args
 
@@ -33,25 +26,25 @@ class WebifyHandler(BaseHTTPRequestHandler):
 		q = urlparse(self.path).query
 		if q:
 			progargs = [unquote(arg) for arg in q.split('&')]
-			
-		with TemporaryFile('wb') as tf:
-			BLCK = 1024
+
+		self.send_response(200)
+		self.send_header('Content-Type', args.mime)
+		self.end_headers()
+
+		with subprocess.Popen([args.prog] + progargs,
+			stdin=subprocess.PIPE,
+			stdout=self.wfile
+		) as sp:
+			BLK_SZ = 1024
 			remain = int(self.headers.get('Content-length', 0))
 
 			while remain > 0:
-				blck = self.rfile.read(min(remain, BLCK))
-				tf.write(blck)
-				remain -= len(blck)
+				block = self.rfile.read(min(remain, BLK_SZ))
+				if len(block) == 0:
+					break
+				sp.stdin.write(block)
+				remain -= len(block)
 
-			self.send_response(200)
-			self.send_header('Content-Type', args.mime)
-			self.end_headers()
-
-			tf.seek(0)
-			subprocess.Popen([args.prog] + progargs,
-				stdin=tf,
-				stdout=self.wfile
-			).wait()
 
 	def do_POST(self):
 		return self.do_GET()
@@ -85,9 +78,6 @@ def main():
 
 	parser.add_argument('-p', '--port', dest='port', action='store',
 		metavar='PORT', type=int, default=8000, help='set the port c2w listens on. it has no effect if c2w runs as a CGI script.')
-
-	parser.add_argument('-t', '--time', dest='timeout', action='store',
-		metavar='TIMEOUT', type=int, default=60, help='set the timeout to wait for reading (seconds). it has no effect if c2w runs as a CGI script.')
 
 	parser.add_argument('-c', '--cgi', dest='cgi', action='store_true',
 		help='run as a CGI script')
